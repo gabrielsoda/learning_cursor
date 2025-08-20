@@ -96,7 +96,7 @@ def main():
     # Read the file
     if word_counter.read_file(file_path):
         # Count words
-        total_words = word_counter.count_words()
+        word_counter.count_words()
         
         # Display results
         word_counter.display_results()

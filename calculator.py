@@ -61,7 +61,10 @@ class Calculator:
                         raise
                     except Exception as e:
                         print(f"Error: {e}")
-                    time.sleep(2)
+                    for i in range(3):
+                        print(".", end="", flush=True)
+                        time.sleep(0.8)
+                    print()
                     
                 elif choice == "2":
                     try:
@@ -73,7 +76,10 @@ class Calculator:
                         raise
                     except Exception as e:
                         print(f"Error: {e}")
-                    time.sleep(2)
+                    for i in range(3):
+                        print(".", end="", flush=True)
+                        time.sleep(0.8)
+                    print()
                     
                 elif choice == "3":
                     try:
@@ -85,7 +91,10 @@ class Calculator:
                         raise
                     except Exception as e:
                         print(f"Error: {e}")
-                    time.sleep(2)
+                    for i in range(3):
+                        print(".", end="", flush=True)
+                        time.sleep(0.8)
+                    print()
                     
                 elif choice == "4":
                     try:
@@ -97,7 +106,10 @@ class Calculator:
                         raise
                     except Exception as e:
                         print(f"Error: {e}")
-                    time.sleep(2)
+                    for i in range(3):
+                        print(".", end="", flush=True)
+                        time.sleep(0.8)
+                    print()
                     
                 elif choice == "5":
                     try:
@@ -109,7 +121,10 @@ class Calculator:
                         raise
                     except Exception as e:
                         print(f"Error: {e}")
-                    time.sleep(2)
+                    for i in range(3):
+                        print(".", end="", flush=True)
+                        time.sleep(0.8)
+                    print()
                     
                 elif choice == "6":
                     try:

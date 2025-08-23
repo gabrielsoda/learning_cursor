@@ -9,6 +9,14 @@ class WordCounter:
         self.text = ""
         self.words = []
         self.word_counts = Counter()
+        # Spanish connector words (stop words) to exclude from counting
+        self.stop_words = {
+            'de', 'la', 'y', 'el', 'en', 'que', 'qué', 'a', 'del', 'un', 'por',
+            'con', 'se', 'no', 'te', 'lo', 'le', 'da', 'su', 'me', 'mi',
+            'es', 'son', 'las', 'los', 'una', 'como', 'pero', 'sus', 'has',
+            'han', 'hay', 'está', 'están', 'fue', 'fueron', 'ser', 'era',
+            'eran', 'tiene', 'sin', 'hace', 'dice', 'dicen', 'para', 'entre', 'al'
+        }
     
     def read_file(self, file_path):
         """
@@ -33,35 +41,38 @@ class WordCounter:
     
     def count_words(self):
         """
-        Count words in the loaded text.
+        Count words in the loaded text, excluding connector words.
         
         Returns:
-            int: Total number of words
+            int: Total number of meaningful words (excluding connectors)
         """
         if not self.text:
             print("No text loaded. Please read a file first.")
             return 0
         
         # Separate content into words using regex
-        self.words = re.findall(r"\w+", self.text.lower())
+        all_words = re.findall(r"\w+", self.text.lower())
         
-        # Count total number of words
+        # Filter out stop words and store meaningful words
+        self.words = [word for word in all_words if word not in self.stop_words]
+        
+        # Count total number of meaningful words
         total_words = len(self.words)
         
-        # Create word frequency counter
+        # Create word frequency counter for meaningful words only
         self.word_counts = Counter(self.words)
         
         return total_words
     
-    def get_most_common_words(self, n=10):
+    def get_most_common_words(self, n=20):
         """
-        Get the n most frequent words.
+        Get the n most frequent meaningful words.
         
         Args:
             n (int): Number of most common words to return
             
         Returns:
-            list: List of tuples (word, count) for the most common words
+            list: List of tuples (word, count) for the most common meaningful words
         """
         if not self.word_counts:
             print("No words counted yet. Please call count_words() first.")
@@ -76,11 +87,11 @@ class WordCounter:
             return
         
         total_words = len(self.words)
-        print(f"Total words: {total_words}")
+        print(f"Total meaningful words (excluding connectors): {total_words}")
         
-        most_common_words = self.get_most_common_words(10)
+        most_common_words = self.get_most_common_words(20)
         if most_common_words:
-            print("\n10 most frequent words:")
+            print("\n10 most frequent meaningful words:")
             for word, count in most_common_words:
                 print(f"{word}: {count}")
 

@@ -1,4 +1,7 @@
 from flask import Flask, render_template, request, redirect
+import json
+import os
+
 # TO-DO APP
 # each task has a title, description, and a boolean indicating if it is completed
 # each task is a dictionary with the following keys: id, title, description, completed
@@ -9,11 +12,37 @@ from flask import Flask, render_template, request, redirect
 # 5. Update an item in the list
 # 6. Search for an item in the list
 
-tasks = [
-    {"id": 1, "title": "Task 1", "description": "Description 1", "completed": False},
-    {"id": 2, "title": "Task 2", "description": "Description 2", "completed": False},
-    {"id": 3, "title": "Task 3", "description": "Description 3", "completed": False},
-]
+# File to store tasks
+TASKS_FILE = "tasks.json"
+
+# Initialize tasks list
+tasks = []
+
+# Function to load tasks from JSON file
+def load_tasks():
+    global tasks
+    if os.path.exists(TASKS_FILE):
+        try:
+            with open(TASKS_FILE, 'r', encoding='utf-8') as file:
+                tasks = json.load(file)
+        except (json.JSONDecodeError, FileNotFoundError):
+            tasks = []
+    else:
+        # Create default tasks if file doesn't exist
+        tasks = [
+            {"id": 1, "title": "Task 1", "description": "Description 1", "completed": False},
+            {"id": 2, "title": "Task 2", "description": "Description 2", "completed": False},
+            {"id": 3, "title": "Task 3", "description": "Description 3", "completed": False},
+        ]
+        save_tasks()
+
+# Function to save tasks to JSON file
+def save_tasks():
+    try:
+        with open(TASKS_FILE, 'w', encoding='utf-8') as file:
+            json.dump(tasks, file, indent=2, ensure_ascii=False)
+    except Exception as e:
+        print(f"Error saving tasks: {e}")
 
 app = Flask(__name__)
 
@@ -32,6 +61,7 @@ def add_task(text):
         "completed": False
     }
     tasks.append(new_task)
+    save_tasks()  # Save after adding
     return new_task
 
 # Function to complete a task by ID
@@ -39,6 +69,16 @@ def complete_task(task_id):
     for task in tasks:
         if task["id"] == task_id:
             task["completed"] = True
+            save_tasks()  # Save after completing
+            return task
+    return None
+
+# Function to edit a task description by ID
+def edit_task(task_id, new_description):
+    for task in tasks:
+        if task["id"] == task_id:
+            task["description"] = new_description
+            save_tasks()  # Save after editing
             return task
     return None
 
@@ -67,8 +107,18 @@ def complete(task_id):
 def delete(task_id):
     # Find and remove the task with the given ID
     tasks[:] = [task for task in tasks if task["id"] != task_id]
+    save_tasks()  # Save after deleting
+    return redirect("/") # redirect to the main page
+
+# edit a task description
+@app.route("/edit/<int:task_id>", methods=["POST"])
+def edit(task_id):
+    new_description = request.form["description"] # get the new description from the form
+    edit_task(task_id, new_description) # update the task description
     return redirect("/") # redirect to the main page
 
 if __name__ == "__main__":
+    # Load tasks when starting the app
+    load_tasks()
     app.run(debug=True)
 

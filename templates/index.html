@@ -1,0 +1,185 @@
+<!-- linter-ignore: html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>My Tasks</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #f5f5f5;
+    }
+    h1 {
+        color: #333;
+        text-align: center;
+        margin-bottom: 30px;
+    }
+    ul {
+        list-style: none;
+        padding: 0;
+    }
+    li {
+        background: white;
+        margin: 10px 0;
+        padding: 15px;
+        border-radius: 5px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .edit-form {
+        display: none;
+        margin: 10px 0;
+        padding: 10px;
+        background: #f8f9fa;
+        border-radius: 5px;
+        border: 1px solid #dee2e6;
+    }
+    .edit-form.show {
+        display: block;
+    }
+    .task-actions {
+        margin-top: 10px;
+    }
+    .task-actions a {
+        margin-right: 10px;
+        text-decoration: none;
+        color: #007bff;
+        padding: 5px 10px;
+        border-radius: 3px;
+        background: #e7f3ff;
+        transition: background-color 0.2s;
+    }
+    .task-actions a:hover {
+        background: #d1ecf1;
+        text-decoration: none;
+    }
+    .edit-input {
+        width: 100%;
+        max-width: 400px;
+        padding: 8px 12px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        margin-right: 10px;
+    }
+    button {
+        padding: 8px 16px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        margin-right: 5px;
+    }
+    button[type="submit"] {
+        background: #28a745;
+        color: white;
+    }
+    button[type="button"] {
+        background: #6c757d;
+        color: white;
+    }
+    button:hover {
+        opacity: 0.8;
+    }
+    .add-form {
+        background: white;
+        padding: 20px;
+        border-radius: 5px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        margin-top: 20px;
+    }
+    .add-form input[type="text"] {
+        width: 100%;
+        max-width: 400px;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        margin-right: 10px;
+    }
+    .status-message {
+        padding: 10px;
+        margin: 10px 0;
+        border-radius: 4px;
+        text-align: center;
+        display: none;
+    }
+    .status-success {
+        background: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+    }
+</style>
+</head>
+<body>
+<h1>TODO App</h1>
+
+<div id="status-message" class="status-message status-success"></div>
+
+<ul>
+{% for task in tasks %}
+<li>
+  {% if task.completed %}
+    <s>{{ task.title }}: {{ task.description }}</s>
+  {% else %}
+    <span class="task-text">{{ task.title }}: {{ task.description }}</span>
+  {% endif %}
+  <div class="task-actions">
+    {% if not task.completed %}
+      <a href="/complete/{{ task.id }}">[Complete]</a>
+      <a href="#" onclick="toggleEdit({{ task.id }})">[Edit]</a> 
+    {% endif %}
+    <a href="/delete/{{ task.id }}">[Delete]</a>
+  </div>
+  
+  <div id="edit-form-{{ task.id }}" class="edit-form">
+    <form action="/edit/{{ task.id }}" method="post" onsubmit="showStatus('Task updated successfully!')">
+      <input type="text" name="description" value="{{ task.description }}" class="edit-input" required>
+      <button type="submit">Save</button>
+      <button type="button" onclick="toggleEdit({{ task.id }})">Cancel</button>
+    </form>
+  </div>
+</li>
+{% endfor %}
+</ul>
+
+<div class="add-form">
+  <form action="/add" method="post" onsubmit="showStatus('Task added successfully!')">
+    <input type="text" name="task" placeholder="New task description" required>
+    <button type="submit">Add Task</button>
+  </form>
+</div>
+
+<script>
+function toggleEdit(taskId) {
+    const editForm = document.getElementById(`edit-form-${taskId}`);
+    editForm.classList.toggle('show');
+}
+
+function showStatus(message) {
+    const statusDiv = document.getElementById('status-message');
+    statusDiv.textContent = message;
+    statusDiv.style.display = 'block';
+    
+    // Hide the message after 3 seconds
+    setTimeout(() => {
+        statusDiv.style.display = 'none';
+    }, 3000);
+}
+
+// Show status message when completing or deleting tasks
+document.addEventListener('DOMContentLoaded', function() {
+    const completeLinks = document.querySelectorAll('a[href^="/complete/"]');
+    const deleteLinks = document.querySelectorAll('a[href^="/delete/"]');
+    
+    completeLinks.forEach(link => {
+        link.addEventListener('click', () => showStatus('Task completed!'));
+    });
+    
+    deleteLinks.forEach(link => {
+        link.addEventListener('click', () => showStatus('Task deleted!'));
+    });
+});
+</script>
+</body>
+</html>
